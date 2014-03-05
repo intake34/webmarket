@@ -20,8 +20,8 @@ public class DBAccess {
 
     String databaseName = "commerce";
     String databaseUsername = "root";
-    String databasePassword = "mysql";
-
+    String databasePassword = "1234";
+    
     Connection con = null;
     ResultSet rst = null;
 
@@ -71,5 +71,32 @@ public class DBAccess {
 
         return products;
     }
+
+
+
+public boolean deleteProduct(int id) throws SQLException
+{
+con = StartConnection();
+        boolean is_deleted=true;
+        if (con != null) {
+
+            try {
+                PreparedStatement pst = con.prepareCall("Delete from product  where id = ?");
+                pst.setInt(1, id);
+                is_deleted = pst.execute();
+
+              
+                   
+
+                   
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+            con.close();
+        }
+
+        return is_deleted;
+    }
+
 
 }
