@@ -3,6 +3,15 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 import java.io.*;
 import java.sql.*;
+import java.util.Iterator;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+ import org.apache.commons.fileupload.FileItem;
+    import org.apache.commons.fileupload.FileUploadException;
+   import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+   import org.apache.commons.fileupload.servlet.ServletFileUpload;
+     import org.apache.commons.io.IOUtils;
 
 public class query extends HttpServlet {
 
@@ -13,6 +22,10 @@ public class query extends HttpServlet {
     // hellow
     Connection con = null;
     ResultSet rst = null;
+      String name ;
+        String desc ;
+        String price ;
+        String quan ;
 
     public Connection StartConnection() throws SQLException {
 
@@ -49,6 +62,7 @@ if(Request.getParameter("edit")==null){
     }
     public void doPost(HttpServletRequest request,HttpServletResponse response) throws ServletException , IOException
     {
+        String filename="";
          if(request.getParameter("save")!=null)
             {
                 try{
@@ -66,25 +80,97 @@ if(Request.getParameter("edit")==null){
             response.sendRedirect("admin.jsp");
                 }catch(Exception e){}
             }else{
-        String name = request.getParameter("name");
-        String desc = request.getParameter("desc");
-        String price = request.getParameter("price");
-        String quan = request.getParameter("quantity");
-        try{
+     
+          try{
          con = StartConnection();
               if (con != null) {
+            
+                  DiskFileItemFactory factory = new DiskFileItemFactory();
+  // maximum size that will be stored in memory
+   //  factory.setSizeThreshold(maxMemSize);
+  // Location to save data that is larger than maxMemSize.
+     factory.setRepository(new File("/home/ashraf/images"));  
 
+  // Create a new file upload handler
+      ServletFileUpload upload = new ServletFileUpload(factory);
+  // maximum file size to be uploaded.
+   //  upload.setSizeMax( maxFileSize );
+
+     
+  // Parse the request to get file items.
+    PrintWriter s = response.getWriter();
+     List<FileItem> fileItems = upload.parseRequest(request);
+      // Process regular form field (input type="text|radio|checkbox|etc", select, etc).
+               // String fieldname = item.getFieldName();
+                 
+        name=fileItems.get(0).getString();
+        desc=fileItems.get(1).getString();
+        price=fileItems.get(2).getString().toString();
+        quan=fileItems.get(3).getString().toString();
+      //  s.print("name"+name);
+              
+       
+       
+            
+     
+    //   s.print(request.getParameter("name"));
+
+  // Process the uploaded file items
+      Iterator i = fileItems.iterator();
+
+    
+     while ( i.hasNext () ) 
+     {
+       FileItem fi = (FileItem)i.next();
+     if ( !fi.isFormField () )  
+     {
+        // Get the uploaded file parameters
+        String fieldName = fi.getFieldName();
+        String fileName = fi.getName();
+        String contentType = fi.getContentType();
+        boolean isInMemory = fi.isInMemory();
+        long sizeInBytes = fi.getSize();
+        // Write the file
+        File file;
+         
+        if( fileName.lastIndexOf("\\") >= 0 ){
+            file = new File( "/home/ashraf/images/"+  fileName.substring( fileName.lastIndexOf("/"))) ;
+            filename = "/home/ashraf/images/"+fileName;
+        }else{
+           file = new File( "/home/ashraf/images/"+  fileName.substring(fileName.lastIndexOf("/")+1)) ;
+            filename = "/home/ashraf/images/"+fileName;
+        }
+         s.println("abl write");
+        fi.write( file );
+        
+     }}
+         s.println("ehhhhh");
+       s.println(name+desc+price+quan+filename);
+   
                 PreparedStatement pst = con.prepareCall("insert into product values(default,?,?,?,?,1,?)");
+                s.println("ehhhhh"+name+desc+price+quan+filename);
                 pst.setString(1, name);
+                 s.println("1"+name);
+               
                 pst.setString(2, desc);
-                pst.setString(3, price);
-                pst.setString(4, quan);
-                pst.setString(5, "");
+                s.println("2"+desc);
+               
+                pst.setFloat(3, Float.parseFloat(price));
+                s.println("3"+price);
+               
+                pst.setInt(4, Integer.parseInt(quan));
+                s.println("4"+quan);
+               
+                pst.setString(5, filename);
+                s.println("5"+filename);
+               
                 pst.execute();
+                 s.println("ashroooooooooooooooooof"+name+desc+price+quan+filename);
+        
 
                 con.close();
+                
             }
-
             response.sendRedirect("admin.jsp");
 
         } catch (Exception e) {
@@ -92,5 +178,5 @@ if(Request.getParameter("edit")==null){
             e.printStackTrace();
         }
     
-    }}
+         } }     
 }
