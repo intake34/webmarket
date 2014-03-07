@@ -19,6 +19,7 @@ public class query extends HttpServlet {
     String databaseUsername = "root";
     String databasePassword = "1234";
 
+    // hellow
     Connection con = null;
     ResultSet rst = null;
       String name ;
@@ -32,7 +33,6 @@ public class query extends HttpServlet {
             Class.forName("com.mysql.jdbc.Driver");
             con = DriverManager.getConnection("jdbc:mysql://localhost:3306/" + databaseName, databaseUsername, databasePassword);
         } catch (Exception ex) {
-            ex.printStackTrace();
         }
 
         return con;
