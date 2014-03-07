@@ -19,7 +19,7 @@ public class Product {
     private float price;
     private int quantity;
     private int categoryID;
-    private String image;
+    private String image; // change
 
     public Product(int id, String name, String desc, float price, int quantity, int categoryID, String image) {
         this.id = id;

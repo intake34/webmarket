@@ -98,5 +98,11 @@ con = StartConnection();
         return is_deleted;
     }
 
+public static int getUserInfo()
+{
+   return 5;
+}
+
+
 
 }
